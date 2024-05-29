@@ -1,0 +1,156 @@
+generator client {
+  provider      = "prisma-client-js"
+  //previewFeatures = ["clientExtensions", "multiSchema"]
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  //directUrl = env("DIRECT_URL")
+  //schemas   = ["auth", "public"]
+}
+
+enum OrderStatus {
+  PREPARING
+  SHIPPED
+  DELIVERED
+}
+
+enum CartItemStatus {
+  IN_CART
+  REMOVED
+  PURCHASED
+}
+
+enum UserRoleStatus {
+  ADMIN
+  CUSTOMER
+}
+
+model User {
+  id        String         @id @default(cuid())
+  name      String
+  email     String         @unique
+  password  String
+  orders    Order[]
+  userRole  UserRoleStatus @default(CUSTOMER)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  Cart      Cart[]
+
+  @@map("users")
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String           @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  isFeatured  Boolean          @default(false)
+  categoryId  String
+  category    Category         @relation(fields: [categoryId], references: [id])
+  stock       Int
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  variants    ProductVariant[]
+  OrderItem   OrderItem[]
+  CartItem    CartItem[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  id            String          @id @default(cuid())
+  productId     String
+  product       Product         @relation(fields: [productId], references: [id])
+  variantType   String
+  variantValues VariantOption[]
+
+  @@map("product_variants")
+}
+
+model VariantOption {
+  id               String         @id @default(cuid())
+  productVariantId String
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  name             String
+  value            String
+  OrderItem        OrderItem[]
+  CartItem         CartItem[]
+
+  @@map("variant_options")
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  orderItems  OrderItem[]
+  total       Float
+  status      OrderStatus @default(PREPARING)
+  addressLine String
+  city        String
+  state       String
+  postalCode  String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id              String         @id @default(cuid())
+  orderId         String
+  order           Order          @relation(fields: [orderId], references: [id])
+  productId       String
+  product         Product        @relation(fields: [productId], references: [id])
+  variantOption   VariantOption? @relation(fields: [variantOptionId], references: [id])
+  variantOptionId String?
+  quantity        Int
+  price           Float
+
+  @@map("order_items")
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  cartItems CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id              String         @id @default(cuid())
+  cartId          String
+  cart            Cart           @relation(fields: [cartId], references: [id])
+  productId       String
+  product         Product        @relation(fields: [productId], references: [id])
+  variantOption   VariantOption? @relation(fields: [variantOptionId], references: [id])
+  variantOptionId String?
+  quantity        Int
+  status          CartItemStatus @default(IN_CART)
+  history         CartHistory[]
+
+  @@map("cart_items")
+}
+
+model CartHistory {
+  id         String         @id @default(cuid())
+  cartItemId String
+  cartItem   CartItem       @relation(fields: [cartItemId], references: [id])
+  action     CartItemStatus
+  actionDate DateTime       @default(now())
+
+  @@map("cart_history")
+}
