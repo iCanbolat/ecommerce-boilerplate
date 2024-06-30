@@ -1,4 +1,3 @@
-'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -61,12 +60,13 @@ import {
 } from '@/components/ui/tooltip';
 import { DataTable } from '../../_components/table/data-table';
 import { columns } from '../../_components/table/columns/product-cols';
-import { IProduct, ProductStatus } from '../../../../utils/types';
+import { IProduct } from '../../../../utils/types';
+import { ProductStatus } from '@prisma/client';
 
 function Products() {
   const products: IProduct[] = [
     {
-      id: 1,
+      id: '1',
       createdAt: new Date(),
       image: 'https://github.com/shadcn.png',
       title: 'testtest test testtest',
@@ -76,24 +76,20 @@ function Products() {
     },
   ];
   return (
-    <div className='flex min-h-screen w-full flex-col '>
-      <div className='flex flex-col sm:gap-4 sm:py-4 sm:pl-14'>
-        <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
-            <div className='flex items-center'></div>
-            <Card x-chunk='dashboard-06-chunk-0'>
-              <CardHeader>
-                <CardTitle>Products</CardTitle>
-                <CardDescription>
-                  Manage your products and view their sales performance.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <DataTable columns={columns} data={products} />
-              </CardContent>
-            </Card>
-        </main>
-      </div>
-    </div>
+    <>
+      <Card x-chunk='dashboard-06-chunk-0'>
+        <CardHeader>
+          <CardTitle>Products</CardTitle>
+          <CardDescription>
+            Manage your products and view their sales performance.
+          </CardDescription>
+          {/*<div className='flex flex-row'>Breadcrumb</div>*/}
+        </CardHeader>
+        <CardContent>
+          <DataTable page='product' columns={columns} data={products} />
+        </CardContent>
+      </Card>
+    </>
   );
 }
 export default Products;

@@ -49,6 +49,23 @@
   }
 }
 
+@keyframes scale-up {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@layer components {
+  .animate-scale-up {
+    animation: scale-up 0.5s forwards;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

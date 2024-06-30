@@ -3,7 +3,19 @@ import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import NavigationLink from './navigation-link';
 
-import { Home , LayoutDashboard, LineChart, LogOut, Package, Package2, PanelLeft, Search, ShoppingCart, Users2 } from 'lucide-react';
+import {
+  Home,
+  LayoutDashboard,
+  LineChart,
+  LogOut,
+  Package,
+  Package2,
+  PanelLeft,
+  Search,
+  ShoppingCart,
+  Users2,
+  Notebook,
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ProjectLink from './project-link';
 import ProjectNavigation from './project-navigation';
@@ -61,7 +73,12 @@ const navLinks = [
   {
     name: 'Dashboard',
     href: '/dashboard',
-    icon: Home ,
+    icon: Home,
+  },
+  {
+    name: 'Categories',
+    href: '/dashboard/category',
+    icon: Notebook,
   },
   {
     name: 'Products',
@@ -75,8 +92,8 @@ const navLinks = [
   },
   {
     name: 'Logout',
-     icon: LogOut,
-  }
+    icon: LogOut,
+  },
 ];
 
 const Navigation = () => {
@@ -109,15 +126,11 @@ const Navigation = () => {
       onMouseLeave={() => handleOpenClose()}
       className=''
     >
-          
-       
-        
-       
       <motion.nav
         variants={containerVariants}
         animate={containerControls}
         initial='close'
-        className='bg-slate-900 hidden   sm:flex flex-col gap-20 p-5 absolute top-0 left-0 h-full shadow shadow-neutral-600 z-50'
+        className='bg-slate-900 hidden lg:flex flex-col gap-20 p-5 absolute top-0 left-0 h-full shadow shadow-neutral-600 z-50'
       >
         <div className='flex flex-row w-full justify-between place-items-center'>
           <motion.div
@@ -135,7 +148,12 @@ const Navigation = () => {
           <Separator />
           {navLinks.map((item, idx) => (
             <NavigationLink href={item.href} name={item.name} key={idx}>
-              <item.icon className={cn(' min-w-8 w-8 p-0.5 stroke-[1.70]',item.href === pathname && 'bg-white rounded-md text-black')} />
+              <item.icon
+                className={cn(
+                  ' min-w-8 w-8 p-0.5 h-full stroke-[1.70]',
+                  item.href === pathname && 'bg-white rounded-md text-black'
+                )}
+              />
             </NavigationLink>
           ))}
         </div>
@@ -163,7 +181,7 @@ const Navigation = () => {
           </ProjectLink>
         </div>*/}
       </motion.nav>
-      <AnimatePresence>
+      {/*<AnimatePresence>
         {selectedProject && (
           <ProjectNavigation
             selectedProject={selectedProject}
@@ -171,7 +189,7 @@ const Navigation = () => {
             isOpen={isOpen}
           />
         )}
-      </AnimatePresence>
+      </AnimatePresence>*/}
     </div>
   );
 };

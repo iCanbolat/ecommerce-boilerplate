@@ -93,7 +93,7 @@ export const columns: ColumnDef<IProduct>[] = [
     cell: ({ row }) => {
       return (
         <div className='flex items-center'>
-          <span>{row.getValue('price')}</span>
+          <span>${row.getValue('price')}</span>
         </div>
       );
     },

@@ -32,11 +32,13 @@ import useLocalStorage from '../../../../lib/hooks/use-localstorage';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  page: 'product' | 'order';
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  page,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   //const [columnVisibility, setColumnVisibility] =
@@ -46,14 +48,11 @@ export function DataTable<TData, TValue>({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [items, setItems] = useLocalStorage<VisibilityState>('items', {});
-  const [isClient, setIsClient] = React.useState(false);
+  //const [isClient, setIsClient] = React.useState(false);
 
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-
- 
-
+  //React.useEffect(() => {
+  //  setIsClient(true);
+  //}, []);
 
   const table = useReactTable({
     data,
@@ -76,13 +75,13 @@ export function DataTable<TData, TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
-  if (!isClient) {
-    return null; // Server tarafında render edilmez
-  }
-  
+  //if (!isClient) {
+  //  return null;  
+  //}
+
   return (
     <div className='space-y-4 h-[80vh]'>
-      <DataTableToolbar table={table} />
+      <DataTableToolbar page={page} table={table} />
       <div className='rounded-md border h-[90%]'>
         <Table>
           <TableHeader>

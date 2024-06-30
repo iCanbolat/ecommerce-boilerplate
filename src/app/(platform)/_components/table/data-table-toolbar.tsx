@@ -10,15 +10,20 @@ import { priorities, statuses, productstatus } from './data';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import { File, PlusCircle } from 'lucide-react';
 import { DataTableViewOptions } from './data-table-view-options';
+import useModalStore from '../../../../store/modal-state';
+import CreateProductModal from '../modal/create-product';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  page: 'order' | 'product';
 }
 
 export function DataTableToolbar<TData>({
   table,
+  page,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
+  //const { isOpen, openModal, closeModal } = useModalStore();
 
   return (
     <div className='flex items-center justify-between'>
@@ -32,7 +37,7 @@ export function DataTableToolbar<TData>({
           className='h-8 w-[150px] lg:w-[250px]'
         />
 
-        {table.getColumn('status') && (
+        {table.getColumn('status') && page === 'product' && (
           <DataTableFacetedFilter
             column={table.getColumn('status')}
             title='Status'
@@ -46,13 +51,13 @@ export function DataTableToolbar<TData>({
             options={statuses}
           />
         )}*/}
-        {table.getColumn('priority') && (
+        {/*{table.getColumn('priority') && (
           <DataTableFacetedFilter
             column={table.getColumn('priority')}
             title='Priority'
             options={priorities}
           />
-        )}
+        )}*/}
         {isFiltered && (
           <Button
             variant='ghost'
@@ -65,20 +70,14 @@ export function DataTableToolbar<TData>({
         )}
       </div>
       <div className='flex space-x-2'>
-
-      <DataTableViewOptions table={table} />
-      <Button size='sm' variant='outline' className='h-8 gap-1'>
-        <File className='h-3.5 w-3.5' />
-        <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
-          Export
-        </span>
-      </Button>
-      <Button size='sm' className='h-8 gap-1'>
-        <PlusCircle className='h-3.5 w-3.5' />
-        <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
-          Add Product
-        </span>
-      </Button>
+        <DataTableViewOptions table={table} />
+        <Button size='sm' variant='outline' className='h-8 gap-1'>
+          <File className='h-3.5 w-3.5' />
+          <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
+            Export
+          </span>
+        </Button>
+        <CreateProductModal />
       </div>
     </div>
   );
