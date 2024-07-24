@@ -62,6 +62,7 @@ import { DataTable } from '../../_components/table/data-table';
 import { columns } from '../../_components/table/columns/product-cols';
 import { IProduct } from '../../../../utils/types';
 import { ProductStatus } from '@prisma/client';
+import ImageSection from '../../_components/modal/create-product/image-section';
 
 function Products() {
   const products: IProduct[] = [

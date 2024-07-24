@@ -3,6 +3,7 @@ import { ImagePlus } from 'lucide-react';
 import React from 'react';
 import { Input } from '../../../../components/ui/input';
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
+import { cn } from '../../../../lib/utils';
 
 type Props<
   TFieldValues extends FieldValues,
@@ -10,6 +11,7 @@ type Props<
 > = {
   field: ControllerRenderProps<TFieldValues, TName>;
   type: 'multiple' | 'single';
+  className?: string;
 };
 
 const ImageUploadBox = <
@@ -18,20 +20,28 @@ const ImageUploadBox = <
 >({
   field,
   type,
+  className,
 }: Props<TFieldValues, TName>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    field.onChange(type === 'single' ? files[0] : files);
+  };
+
   return (
-    <div className='m-auto w-52 h-52 border-2 border-dotted border-slate-400 rounded-lg bg-slate-300 hover:bg-slate-300/70 relative'>
+    <div
+      className={cn(
+        'm-auto border-2 border-dotted border-slate-400 rounded-lg bg-slate-300 hover:bg-slate-300/70 relative',
+        className
+      )}
+    >
       <ImagePlus size={36} color='#ffffff' className='m-auto h-full' />
       <Input
         id='image'
         onBlur={field.onBlur}
         name={field.name}
         className='inset-0 absolute opacity-0 h-full cursor-pointer'
-        onChange={(e) => {
-          field.onChange(
-            type === 'single' ? e.target.files?.[0] : e.target.files
-          );
-        }}
+        multiple={type === 'multiple'}
+        onChange={handleChange}
         type='file'
       />
     </div>

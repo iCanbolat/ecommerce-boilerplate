@@ -1,5 +1,4 @@
-'use client';
-import React, { useTransition, useEffect } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,9 +7,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Loader2, Plus } from 'lucide-react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -22,15 +18,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
-
-import { createCategory } from '../../_server-actions/category';
 import Image from 'next/image';
 import ImageUploadBox from '../image-upload-box';
-import { generateSlug } from '../../../../lib/utils';
-import { createCategorySchema } from '../../../../lib/form-validations';
 import { Category } from '@prisma/client';
 import { OptimisticUpdateTypes } from '../../../../utils/types';
+import useCreateCategory from '../../../../lib/hooks/use-create-category';
 
 type Props = {
   setOptimisticItem: (action: {
@@ -40,64 +32,12 @@ type Props = {
 };
 
 const CreateCategoryModal = ({ setOptimisticItem }: Props) => {
-  const [isPending, startTransition] = useTransition();
   const [open, setOpen] = React.useState<boolean>(false);
-  const [preview, setPreview] = React.useState<string | null>(null);
-
-  const form = useForm<z.infer<typeof createCategorySchema>>({
-    resolver: zodResolver(createCategorySchema),
-    defaultValues: {
-      name: '',
-      image: undefined,
-      slug: '',
-    },
+  const { form, onSubmit, isPending, preview } = useCreateCategory({
+    setOptimisticItem,
+    whileSubmit: () => setOpen(false),
   });
-
-  useEffect(() => {
-    const subscription = form.watch((value, { name }) => {
-      if (name === 'image' && value.image instanceof File) {
-        setPreview(URL.createObjectURL(value.image));
-      }
-      if (name === 'name' && value.name) {
-        form.setValue('slug', generateSlug(value.name));
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
-
-  async function onSubmit(values: z.infer<typeof createCategorySchema>) {
-    const formData = new FormData();
-    formData.append('name', values.name);
-    formData.append('slug', values.slug);
-
-    if (values.image) {
-      formData.append('image', values.image);
-    }
-    let data = {
-      ...values,
-      image: preview,
-      id: Math.floor(Math.random() * 10).toString(),
-    };
-
-    setOpen(false);
-    form.reset();
-    setPreview(null);
-
-    startTransition(() => {
-      setOptimisticItem({
-        action: OptimisticUpdateTypes.ADD,
-        newCategory: data,
-      });
-      toast.success(values.name + ' category added!');
-
-      createCategory(formData).then((res) => {
-        if (res?.success && !res.success) {
-          toast(res.message);
-        }
-      });
-    });
-  }
-
+  
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
