@@ -12,6 +12,7 @@ type Props<
   field: ControllerRenderProps<TFieldValues, TName>;
   type: 'multiple' | 'single';
   className?: string;
+  customFn?: any;
 };
 
 const ImageUploadBox = <
@@ -21,10 +22,12 @@ const ImageUploadBox = <
   field,
   type,
   className,
+  customFn,
 }: Props<TFieldValues, TName>) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
     field.onChange(type === 'single' ? files[0] : files);
+    //customFn((prev) => [...prev, files]);
   };
 
   return (

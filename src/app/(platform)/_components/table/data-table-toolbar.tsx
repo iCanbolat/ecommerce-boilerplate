@@ -10,7 +10,7 @@ import { priorities, statuses, productstatus } from './data';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import { File, PlusCircle } from 'lucide-react';
 import { DataTableViewOptions } from './data-table-view-options';
- import CreateProductModal from '../modal/create-product/create-product';
+ import CreateProductModal from '../modal/create-product';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;

@@ -54,14 +54,31 @@ export const createProductSchema = z.object({
       }
       return ACCEPTED_IMAGE_TYPES.includes(files.type);
     }, 'Only .jpg, .jpeg, .png and .webp formats are supported.'),
-  description: z.string().optional(),
-  price: z.number().optional(),
-  stock: z.number().optional(),
+  price: z.number(),
+  discountedPrice: z
+    .preprocess(
+      (a) => Number(z.string().parse(a)).toFixed(2),
+      z.number().positive().min(1)
+    )
+    .optional(),
   category: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: 'You have to select at least one item.',
   }),
+  seoTitle: z
+    .string()
+    .max(50, { message: 'Maximum character limit is 50' })
+    .optional(),
+  seoDescription: z
+    .string()
+    .max(280, { message: 'Maximum character limit is 280' })
+    .optional(),
+  description: z.string().optional(),
   status: z.enum(['DRAFT', 'ACTIVE']),
   variants: z.array(ProductVariantSchema).optional(),
+  isFeatured: z.boolean().default(false),
+  slug: z.string(),
+  stock: z.number().optional(),
+  sku: z.string().optional(),
 });
 
 export const createCategorySchema = z.object({
@@ -75,63 +92,4 @@ export const createCategorySchema = z.object({
     )
     .optional(),
   slug: z.string(),
-});
-
-export const createWorkspaceFormSchema = z.object({
-  name: z.string().min(2, {
-    message: 'Name must be longer than 2 char.',
-  }),
-  avatarUrl: z
-    .any()
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      `Max image size is 5MB.`
-    )
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      'Only .jpg, .jpeg, .png and .webp formats are supported.'
-    )
-    .optional(),
-  inviteMembers: z.array(
-    z.object({
-      label: z.string().email('Invalid Email format').optional().nullable(),
-      value: z.string().email('Invalid Email format').optional().nullable(),
-    })
-  ),
-});
-
-export const starterPersonalInfo = z.object({
-  fullName: z.string({ required_error: 'Please provide your full name.' }),
-  inviteMembers: z.array(
-    z.object({
-      label: z.string().email('Invalid Email format').optional().nullable(),
-      value: z.string().email('Invalid Email format').optional().nullable(),
-    })
-  ),
-  avatarUrl: z
-    .any()
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      `Max image size is 5MB.`
-    )
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      'Only .jpg, .jpeg, .png and .webp formats are supported.'
-    )
-    .optional(),
-  companyName: z.string({
-    required_error: 'Please provide your company name.',
-  }),
-  workspaceName: z.string({ required_error: 'Please a workspace name.' }),
-  productAvatarUrl: z
-    .any()
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      `Max image size is 5MB.`
-    )
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      'Only .jpg, .jpeg, .png and .webp formats are supported.'
-    )
-    .optional(),
 });

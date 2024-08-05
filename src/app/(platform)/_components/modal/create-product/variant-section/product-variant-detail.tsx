@@ -3,7 +3,10 @@ import React, { useState, KeyboardEventHandler } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import CreatableSelect from 'react-select/creatable';
 import { z } from 'zod';
-import { createProductSchema } from '../../../../lib/form-validations';
+import { createProductSchema } from '@/lib/form-validations';
+import { Trash, X } from 'lucide-react';
+import { Button } from '../../../../../../components/ui/button';
+import { Input } from '../../../../../../components/ui/input';
 
 const components = {
   DropdownIndicator: null,
@@ -19,15 +22,19 @@ const createOption = (label: string) => ({
   value: label,
 });
 
-const MultiSelect = ({
+const ProductVariantDetail = ({
   form,
+  isCreate,
+  setIsClicked,
 }: {
   form: UseFormReturn<z.infer<typeof createProductSchema>, any, undefined>;
+  isCreate?: boolean;
+  setIsClicked?: (value: boolean) => void;
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [value, setArrayValue] = useState<readonly Option[]>([]);
   const [variantType, setVariantType] = useState<string>(
-    form.getValues('variants')![0].type ?? ''
+    !isCreate ? form.getValues('variants')![0].type : ''
   );
 
   const handleKeyDown: KeyboardEventHandler = async (event) => {
@@ -73,16 +80,35 @@ const MultiSelect = ({
   };
 
   return (
-    <div className='w-full flex flex-col'>
+    <div className='w-full flex flex-col space-y-3 p-1'>
       <div className='flex'>
-        <input
+        <Input
           type='text'
           placeholder='Variant Type'
           value={variantType}
-          onChange={(e) => setVariantType(e.target.value)}
-          className='mb-2 px-2 py-1 border rounded'
+          onChange={(e) => setVariantType(e.target.value.toLocaleLowerCase())}
+          className='w-32'
         />
-        <div className='ml-auto'>das</div>
+        <div className='ml-auto'>
+          {isCreate ? (
+            <Button
+              onClick={() => setIsClicked && setIsClicked(false)}
+              variant='outline'
+              size={'icon'}
+              className='rounded-full'
+            >
+              <X className=' h-4 w-4' strokeWidth={3} />
+            </Button>
+          ) : (
+            <Button
+              variant='destructive'
+              size={'icon'}
+              className='rounded-full'
+            >
+              <Trash className=' h-4 w-4' strokeWidth={3} />
+            </Button>
+          )}
+        </div>
       </div>
       <CreatableSelect
         components={components}
@@ -112,4 +138,4 @@ const MultiSelect = ({
   );
 };
 
-export default MultiSelect;
+export default ProductVariantDetail;

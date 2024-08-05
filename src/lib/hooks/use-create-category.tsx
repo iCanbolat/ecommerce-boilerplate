@@ -3,13 +3,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { generateSlug } from '@/lib/utils';
+import { generateRandomId, generateSlug } from '@/lib/utils';
 import { createCategorySchema } from '@/lib/form-validations';
 import { OptimisticUpdateTypes } from '@/utils/types';
 import { createCategory } from '../../app/(platform)/_server-actions/category';
 import { Category } from '@prisma/client';
 import { useSWRConfig } from 'swr';
- 
+
 type UseCreateCategoryProps = {
   setOptimisticItem?: (action: {
     action: OptimisticUpdateTypes;
@@ -17,17 +17,15 @@ type UseCreateCategoryProps = {
   }) => void;
 
   whileSubmit?: () => void;
-  revalidateCache?: () => void; 
 };
 
 const useCreateCategory = ({
   setOptimisticItem,
   whileSubmit,
-  revalidateCache,
 }: UseCreateCategoryProps) => {
   const [isPending, startTransition] = useTransition();
   const [preview, setPreview] = useState<string | null>(null);
-  const { mutate } = useSWRConfig()
+  const { mutate } = useSWRConfig();
 
   const form = useForm<z.infer<typeof createCategorySchema>>({
     resolver: zodResolver(createCategorySchema),
@@ -61,7 +59,7 @@ const useCreateCategory = ({
     let data = {
       ...values,
       image: preview,
-      id: Math.floor(Math.random() * 10).toString(),
+      id: generateRandomId(10),
     };
 
     if (whileSubmit) whileSubmit();
@@ -69,19 +67,19 @@ const useCreateCategory = ({
     setPreview(null);
 
     startTransition(async () => {
+      const res = await createCategory(formData);
       if (setOptimisticItem) {
         setOptimisticItem({
           action: OptimisticUpdateTypes.ADD,
           newCategory: data,
         });
-        const res = await createCategory(formData);
-        if (res?.success && !res.success) {
-          toast(res.message);
-        } else {
-          mutate('/api/category')
-          if (revalidateCache) revalidateCache();
-          toast.success(values.name + ' category added!');
-        }
+      } else {
+        mutate('/api/category');
+      }
+      if (res?.success && res.success) {
+        toast.success(values.name + ' category added!');
+      } else {
+        toast.error('Error occured!');
       }
     });
   };
