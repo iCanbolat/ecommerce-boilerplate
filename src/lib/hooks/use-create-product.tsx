@@ -1,3 +1,4 @@
+'use client';
 import { useState, useTransition, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,19 +28,19 @@ const useCreateProduct = ({
   const form = useForm<z.infer<typeof createProductSchema>>({
     resolver: zodResolver(createProductSchema),
     defaultValues: {
-      name: '',
-      category: ['all'],
+      name: 'test',
       image: [],
-      description: '',
-      slug: '',
-      sku: '',
       price: 0,
-      stock: 0,
-      discountedPrice: 0,
+      description: undefined,
+      discountedPrice: undefined,
       isFeatured: false,
-      seoDescription: '',
-      seoTitle: '',
+      category: ['all'],
+      seoDescription: undefined,
+      seoTitle: undefined,
       status: 'ACTIVE',
+      sku: undefined,
+      stock: 0,
+      slug: '',
       variants: [
         { type: 'color', options: ['Red', 'Black'] },
         { type: 'size', options: ['S', 'M', 'L'] },
@@ -51,7 +52,7 @@ const useCreateProduct = ({
     const subscription = form.watch((value, { name }) => {
       if (name === 'image' && Array.isArray(value.image)) {
         const previews = value.image.map((file) => {
-          return { id: generateRandomId(10), src: URL.createObjectURL(file) };
+          return { id: generateRandomId(10), src: URL.createObjectURL(file!) };
         });
         setPreview((prev) => [...prev, ...previews]);
       }

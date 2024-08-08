@@ -26,15 +26,22 @@ const ProductVariantDetail = ({
   form,
   isCreate,
   setIsClicked,
+  variantItem,
 }: {
   form: UseFormReturn<z.infer<typeof createProductSchema>, any, undefined>;
   isCreate?: boolean;
   setIsClicked?: (value: boolean) => void;
+  variantItem?: {
+    options: string[];
+    type: string;
+  };
 }) => {
   const [inputValue, setInputValue] = useState('');
-  const [value, setArrayValue] = useState<readonly Option[]>([]);
+  const [value, setArrayValue] = useState<readonly Option[]>(
+    variantItem?.options.map((i) => createOption(i)) ?? []
+  );
   const [variantType, setVariantType] = useState<string>(
-    !isCreate ? form.getValues('variants')![0].type : ''
+    variantItem?.type ?? ''
   );
 
   const handleKeyDown: KeyboardEventHandler = async (event) => {
@@ -94,6 +101,7 @@ const ProductVariantDetail = ({
             <Button
               onClick={() => setIsClicked && setIsClicked(false)}
               variant='outline'
+              type='button'
               size={'icon'}
               className='rounded-full'
             >
@@ -103,6 +111,7 @@ const ProductVariantDetail = ({
             <Button
               variant='destructive'
               size={'icon'}
+              type='button'
               className='rounded-full'
             >
               <Trash className=' h-4 w-4' strokeWidth={3} />

@@ -15,6 +15,7 @@ import {
   FormControl,
   FormItem,
   FormMessage,
+  FormLabel,
 } from '@/components/ui/form';
 
 import useCreateProduct from '../../../../../lib/hooks/use-create-product';
@@ -28,6 +29,8 @@ import {
 import CustomProductSections from './product-custom-section';
 import ProductCustomAside from './product-custom-aside';
 import ImageSection from './image-section';
+import { CustomSwitch } from '../../../../../components/ui/switch';
+import { Label } from '../../../../../components/ui/label';
 
 const CreateProductModal = () => {
   const { form, onSubmit, preview, setPreview, variantCombinations } =
@@ -49,8 +52,30 @@ const CreateProductModal = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className='w-full space-y-6'
           >
-            <DialogHeader className='w-full flex space-x-5 items-center flex-row'>
-              <DialogTitle>Create New Product</DialogTitle>
+            <DialogHeader className='w-full flex space-x-5 items-center justify-between flex-row'>
+              <FormField
+                control={form.control}
+                name='status'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className='flex items-center space-x-2'>
+                        <Label htmlFor='product-mode'>Draft</Label>
+                        <CustomSwitch
+                          checked={field.value === 'ACTIVE'}
+                          onCheckedChange={(checked) => {
+                            return checked
+                              ? field.onChange('ACTIVE')
+                              : field.onChange('DRAFT');
+                          }}
+                          id='product-mode'
+                        />
+                        <Label htmlFor='product-mode'>Active</Label>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name='variants'
@@ -85,6 +110,7 @@ const CreateProductModal = () => {
                   </FormItem>
                 )}
               />
+              <div className='w-36'></div>
             </DialogHeader>
             <div className='grid grid-cols-3 gap-4 '>
               <fieldset className='border-2 border-solid border-gray-300 h-[70vh] overflow-auto p-3 col-span-2 shadow-xl'>

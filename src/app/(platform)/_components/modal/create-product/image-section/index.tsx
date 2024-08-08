@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/form';
 import { UseFormReturn } from 'react-hook-form';
 import { useState } from 'react';
- import {
+import {
   DndContext,
   KeyboardSensor,
   MeasuringStrategy,
@@ -101,10 +101,7 @@ const ImageSection = ({ form, preview, setPreview }: ImageSectionProps) => {
   return (
     <div className='w-full'>
       <div className=' mx-auto max-w-[56rem] rounded-xl border bg-gradient-to-b from-gray-100 from-0% to-gray-200 to-100% shadow-lg'>
-        <GalleryTitle
-          marked={marked}
-          handleDelete={handleDelete}
-        />
+        <GalleryTitle marked={marked} handleDelete={handleDelete} />
         <DndContext
           sensors={sensors}
           onDragEnd={handleDragEnd}
