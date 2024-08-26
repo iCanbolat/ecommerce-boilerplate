@@ -76,7 +76,7 @@ export function DataTableToolbar<TData>({
             Export
           </span>
         </Button>
-        <CreateProductModal />
+        <CreateProductModal data={table.getCoreRowModel()}/>
       </div>
     </div>
   );

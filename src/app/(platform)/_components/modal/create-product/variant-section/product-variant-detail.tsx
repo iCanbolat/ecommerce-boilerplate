@@ -4,9 +4,10 @@ import { UseFormReturn } from 'react-hook-form';
 import CreatableSelect from 'react-select/creatable';
 import { z } from 'zod';
 import { createProductSchema } from '@/lib/form-validations';
-import { Trash, X } from 'lucide-react';
+import { Check, Trash, X } from 'lucide-react';
 import { Button } from '../../../../../../components/ui/button';
 import { Input } from '../../../../../../components/ui/input';
+import { Variant } from '../../../../../../lib/types';
 
 const components = {
   DropdownIndicator: null,
@@ -27,14 +28,15 @@ const ProductVariantDetail = ({
   isCreate,
   setIsClicked,
   variantItem,
+  setVariants,
+  variants,
 }: {
   form: UseFormReturn<z.infer<typeof createProductSchema>, any, undefined>;
   isCreate?: boolean;
   setIsClicked?: (value: boolean) => void;
-  variantItem?: {
-    options: string[];
-    type: string;
-  };
+  setVariants: React.Dispatch<React.SetStateAction<Variant[]>>;
+  variants: Variant[];
+  variantItem?: Variant;
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [value, setArrayValue] = useState<readonly Option[]>(
@@ -43,6 +45,25 @@ const ProductVariantDetail = ({
   const [variantType, setVariantType] = useState<string>(
     variantItem?.type ?? ''
   );
+
+  const handleCancelOrDeleteButton = () => {
+    const existingVariantIndex = variants.findIndex(
+      (variant) => variant.type === variantType
+    );
+
+    if (existingVariantIndex < 0) {
+      setIsClicked && setIsClicked(false);
+      return;
+    }
+
+    const updatedVariants = variants.filter(
+      (variant) => variant.type !== variantType
+    );
+
+    setVariants(updatedVariants);
+
+    form.setValue('variants', updatedVariants);
+  };
 
   const handleKeyDown: KeyboardEventHandler = async (event) => {
     if (!inputValue) return;
@@ -91,27 +112,39 @@ const ProductVariantDetail = ({
       <div className='flex'>
         <Input
           type='text'
-          placeholder='Variant Type'
+          placeholder='Variant type'
           value={variantType}
           onChange={(e) => setVariantType(e.target.value.toLocaleLowerCase())}
           className='w-32'
         />
-        <div className='ml-auto'>
+        <div className='ml-auto space-x-1'>
           {isCreate ? (
-            <Button
-              onClick={() => setIsClicked && setIsClicked(false)}
-              variant='outline'
-              type='button'
-              size={'icon'}
-              className='rounded-full'
-            >
-              <X className=' h-4 w-4' strokeWidth={3} />
-            </Button>
+            <>
+              <Button
+                onClick={() => setIsClicked && setIsClicked(false)}
+                variant='outline'
+                type='button'
+                size={'icon'}
+                className='rounded-full'
+              >
+                <Check className=' h-4 w-4' strokeWidth={3} />
+              </Button>
+              <Button
+                onClick={() => handleCancelOrDeleteButton()}
+                variant='outline'
+                type='button'
+                size={'icon'}
+                className='rounded-full'
+              >
+                <X className=' h-4 w-4' strokeWidth={3} />
+              </Button>
+            </>
           ) : (
             <Button
               variant='destructive'
               size={'icon'}
               type='button'
+              onClick={() => handleCancelOrDeleteButton()}
               className='rounded-full'
             >
               <Trash className=' h-4 w-4' strokeWidth={3} />
@@ -140,6 +173,10 @@ const ProductVariantDetail = ({
               ...baseStyles[':hover'],
               borderColor: '#6d28d9',
             },
+          }),
+          placeholder: (baseStyles) => ({
+            ...baseStyles,
+            fontSize: 15,
           }),
         }}
       />

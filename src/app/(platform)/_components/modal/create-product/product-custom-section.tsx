@@ -19,9 +19,11 @@ import { formatPrice } from '../../../../../lib/utils';
 type CustomProductSectionsProps = {
   form: UseFormReturn<z.infer<typeof createProductSchema>, any, undefined>;
   type?: 'pricing' | 'name' | 'variant';
+  createQueryString?: (name: string, value: string) => string
 };
 
-const CustomProductSections = ({ form, type }: CustomProductSectionsProps) => {
+
+const CustomProductSections = ({ form, type ,createQueryString}: CustomProductSectionsProps) => {
   const handlePriceChange = (
     event: ChangeEvent<HTMLInputElement>,
     type: 'discountedPrice' | 'price'
@@ -146,7 +148,7 @@ const CustomProductSections = ({ form, type }: CustomProductSectionsProps) => {
         </>
       )}
 
-      {type === 'variant' && <ProductVariantSection form={form} />}
+      {type === 'variant' && <ProductVariantSection   form={form} />}
     </div>
   );
 };

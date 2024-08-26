@@ -40,7 +40,7 @@ const ProductVariantSchema = z.object({
 
 export const createProductSchema = z.object({
   name: z.string({ required_error: 'Product name is required' }),
-  image: z
+  images: z
     .array(
       z
         .instanceof(File)
@@ -71,10 +71,11 @@ export const createProductSchema = z.object({
     .max(280, { message: 'Maximum character limit is 280' })
     .optional(),
   status: z.enum(['DRAFT', 'ACTIVE']),
-  variants: z.array(ProductVariantSchema).optional(),
+  variants: z.array(ProductVariantSchema),
   slug: z.string(),
-  stock: z.number().optional(),
+  stock: z.number().default(0),
   sku: z.string().optional(),
+  currentVariant: z.string().optional(),
 });
 
 export const createCategorySchema = z.object({

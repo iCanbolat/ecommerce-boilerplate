@@ -35,13 +35,13 @@ const CategoryList = ({ categories, form }: Props) => {
               <FormItem className='flex flex-row items-start space-x-2 space-y-[1px]'>
                 <FormControl>
                   <Checkbox
-                    checked={field.value?.includes(item.name.toLocaleLowerCase())}
+                    checked={field.value?.includes(item.id)}
                     onCheckedChange={(checked) => {
                       return checked
-                        ? field.onChange([...field.value, item.name.toLocaleLowerCase()])
+                        ? field.onChange([...field.value, item.id])
                         : field.onChange(
                             field.value?.filter(
-                              (value: string) => value !== item.name.toLocaleLowerCase()
+                              (value: string) => value !== item.id
                             )
                           );
                     }}

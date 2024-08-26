@@ -54,30 +54,32 @@ model User {
 }
 
 model Category {
-  id       String            @id @default(cuid())
-  name     String
-  image    String?
-  slug     String
-  products ProductCategory[]
+  id              String            @id @default(cuid())
+  name            String
+  image           String?
+  slug            String
+  products        Product[]         @relation("ProductCategories")
+  ProductCategory ProductCategory[]
 
   @@map("categories")
 }
 
 model Product {
-  id             String            @id @default(cuid())
-  name           String
-  description    String?
-  slug           String
-  isFeatured     Boolean           @default(false)
-  status         ProductStatus     @default(ACTIVE)
-  seoTitle       String?
-  seoDescription String?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  variants       ProductVariant[]
-  orderItems     OrderItem[]
-  cartItems      CartItem[]
-  categories     ProductCategory[]
+  id              String            @id @default(cuid())
+  name            String
+  description     String?
+  slug            String            @unique
+  isFeatured      Boolean           @default(false)
+  status          ProductStatus     @default(ACTIVE)
+  seoTitle        String?
+  seoDescription  String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  variants        ProductVariant[]
+  orderItems      OrderItem[]
+  cartItems       CartItem[]
+  categories      Category[]        @relation("ProductCategories")
+  ProductCategory ProductCategory[]
 
   @@map("products")
 }
@@ -85,30 +87,32 @@ model Product {
 model ProductVariant {
   id              String          @id @default(cuid())
   productId       String
-  product         Product         @relation(fields: [productId], references: [id])
+  product         Product         @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   variantName     String          @default("default")
   variantValues   VariantOption[]
   price           Float           @default(0)
   discountedPrice Float?
   sku             String?
   barcode         String?
-  stock           Int
+  stock           Int             @default(0)
   images          ProductImage[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
+  @@unique([productId, variantName])
   @@map("product_variants")
 }
 
 model VariantOption {
   id               String         @id @default(cuid())
   productVariantId String
-  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   name             String
   value            String
   orderItems       OrderItem[]
   cartItems        CartItem[]
 
+  @@unique([productVariantId, name])
   @@map("variant_options")
 }
 
@@ -243,8 +247,8 @@ model PasswordResetToken {
 model ProductCategory {
   productId  String
   categoryId String
-  product    Product  @relation(fields: [productId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([productId, categoryId])
   @@map("product_categories")

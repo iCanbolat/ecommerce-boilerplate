@@ -12,8 +12,19 @@ export const GET = async (
     return NextResponse.json({ success: false, message: 'Unauthorized!' });
 
   try {
-    const data = await prisma.category.findMany();
-    return NextResponse.json({ success: true, data });
+    const productWithVariants = await prisma.product.findUnique({
+      where: { slug: params.slug },
+      include: {
+        variants: {
+          include: {
+            variantValues: true,
+          },
+        },
+        categories: true,
+      },
+    });
+
+    return NextResponse.json({ success: true, data: productWithVariants });
   } catch (error) {
     return NextResponse.json({ success: false, message: error });
   }

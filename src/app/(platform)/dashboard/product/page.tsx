@@ -63,8 +63,23 @@ import { columns } from '../../_components/table/columns/product-cols';
 import { IProduct } from '../../../../utils/types';
 import { ProductStatus } from '@prisma/client';
 import ImageSection from '../../_components/modal/create-product/image-section';
+import prisma from '../../../../lib/prisma';
 
-function Products() {
+async function Products() {
+  const productss = await prisma.product.findMany({
+    include: {
+      variants: {
+        include: {
+          variantValues: true,
+        },
+      },
+      categories: true, // Include the categories associated with each product
+    },
+  });
+
+  //console.log('sad',productss);
+  
+
   const products: IProduct[] = [
     {
       id: '1',

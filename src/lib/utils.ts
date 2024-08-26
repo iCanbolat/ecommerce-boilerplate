@@ -8,13 +8,17 @@ export function cn(...inputs: ClassValue[]) {
 export const generateSlug = (...args: (string | number)[]): string => {
   const value = args.join(' ');
 
-  return value
+  const slug = value
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9 ]/g, '')
     .replace(/\s+/g, '-');
+
+  const randomId = generateRandomId(6);
+
+  return `${slug}-${randomId}`;
 };
 
 export const formatPrice = (value: number): string => {
@@ -35,3 +39,22 @@ export function generateRandomId(length: number) {
   }
   return result;
 }
+export function generateVariantCombinations(
+  variants: { type: string; options: string[] }[]
+): string[][] {
+  const filteredVariants = variants.filter(
+    (variant) => variant.options.length > 0
+  );
+
+  if (filteredVariants.length === 0) return [];
+  if (filteredVariants.length === 1)
+    return filteredVariants[0].options.map((option) => [option]);
+
+  const [first, ...rest] = filteredVariants;
+  const combinations = generateVariantCombinations(rest);
+
+  return first.options.flatMap((option) =>
+    combinations.map((combination) => [option, ...combination])
+  );
+}
+

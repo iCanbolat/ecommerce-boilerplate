@@ -136,7 +136,7 @@ const ImageSection = ({ form, preview, setPreview }: ImageSectionProps) => {
 
               <FormField
                 control={form!.control}
-                name='image'
+                name='images'
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
