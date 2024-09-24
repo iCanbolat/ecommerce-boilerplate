@@ -4,10 +4,12 @@ import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
+  ExpandedState,
   SortingState,
   VisibilityState,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
@@ -48,11 +50,8 @@ export function DataTable<TData, TValue>({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [items, setItems] = useLocalStorage<VisibilityState>('items', {});
-  //const [isClient, setIsClient] = React.useState(false);
+  const [expanded, setExpanded] = React.useState<ExpandedState>({})
 
-  //React.useEffect(() => {
-  //  setIsClient(true);
-  //}, []);
 
   const table = useReactTable({
     data,
@@ -62,12 +61,16 @@ export function DataTable<TData, TValue>({
       columnVisibility: items,
       rowSelection,
       columnFilters,
+      expanded
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setItems,
+    onExpandedChange: setExpanded,
+    getSubRows: row => row.subRows,
+    getExpandedRowModel: getExpandedRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -75,9 +78,7 @@ export function DataTable<TData, TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
-  //if (!isClient) {
-  //  return null;  
-  //}
+ 
 
   return (
     <div className='space-y-4 h-[80vh]'>

@@ -11,6 +11,30 @@ import { DataTableRowActions } from '../data-table-row-actions';
 import { DataTableColumnHeader } from '../data-table-column-header';
 import { IProduct } from '../../../../../utils/types';
 import Image from 'next/image';
+import React, { HTMLProps } from 'react';
+
+function IndeterminateCheckbox({
+  indeterminate,
+  className = '',
+  ...rest
+}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
+  const ref = React.useRef<HTMLInputElement>(null!);
+
+  React.useEffect(() => {
+    if (typeof indeterminate === 'boolean') {
+      ref.current.indeterminate = !rest.checked && indeterminate;
+    }
+  }, [ref, indeterminate]);
+
+  return (
+    <input
+      type='checkbox'
+      ref={ref}
+      className={className + ' cursor-pointer'}
+      {...rest}
+    />
+  );
+}
 
 export const columns: ColumnDef<IProduct>[] = [
   {
@@ -44,12 +68,19 @@ export const columns: ColumnDef<IProduct>[] = [
     ),
     cell: ({ row }) => (
       <div className='flex space-x-5 items-center'>
-        <Image
-          src={row.getValue('image')}
-          alt='resim'
-          width={60}
-          height={70}
-        />
+        {row.getCanExpand() ? (
+          <button
+            {...{
+              onClick: row.getToggleExpandedHandler(),
+              style: { cursor: 'pointer' },
+            }}
+          >
+            {row.getIsExpanded() ? '👇' : '👉'}
+          </button>
+        ) : (
+          '🔵'
+        )}
+        <Image src={row.getValue('image')} alt='resim' width={60} height={70} />
         <span className='max-w-[500px] truncate font-medium'>
           {row.original.title}
         </span>{' '}
@@ -118,14 +149,25 @@ export const columns: ColumnDef<IProduct>[] = [
     },
   },
   {
-    accessorKey: 'createdAt',
+    accessorKey: 'status',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Created At' />
+      <DataTableColumnHeader column={column} title='Status' />
     ),
     cell: ({ row }) => {
+      const status = productstatus.find(
+        (status) => status.value === row.getValue('status')
+      );
+
+      if (!status) {
+        return null;
+      }
+
       return (
-        <div className='flex items-center'>
-          <span>{row.original.createdAt.toLocaleDateString()}</span>
+        <div className='flex w-[100px] items-center'>
+          {status.icon && (
+            <status.icon className='mr-2 h-4 w-4 text-muted-foreground' />
+          )}
+          <span>{status.label}</span>
         </div>
       );
     },

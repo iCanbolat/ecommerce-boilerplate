@@ -66,19 +66,28 @@ import ImageSection from '../../_components/modal/create-product/image-section';
 import prisma from '../../../../lib/prisma';
 
 async function Products() {
-  const productss = await prisma.product.findMany({
+  let productss = await prisma.product.findMany({
     include: {
       variants: {
         include: {
           variantValues: true,
+          images: true,
         },
       },
-      categories: true, // Include the categories associated with each product
+      categories: true,
     },
   });
 
-  //console.log('sad',productss);
-  
+  productss = productss.map((product, index) => ({
+    ...product,
+    price: product.variants[0].price,
+    totalSale: 50,
+    title: product.name,
+    image: product.variants[0].images[0].url,
+    subRows: product.variants,
+  }));
+
+  console.log('sad', productss);
 
   const products: IProduct[] = [
     {
@@ -102,7 +111,7 @@ async function Products() {
           {/*<div className='flex flex-row'>Breadcrumb</div>*/}
         </CardHeader>
         <CardContent>
-          <DataTable page='product' columns={columns} data={products} />
+          <DataTable page='product' columns={columns} data={productss} />
         </CardContent>
       </Card>
     </>

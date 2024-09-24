@@ -31,7 +31,6 @@ import ProductCustomAside from './product-custom-aside';
 import ImageSection from './image-section';
 import { CustomSwitch } from '../../../../../components/ui/switch';
 import { Label } from '../../../../../components/ui/label';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSearchParamStore } from '../../../../../store/modal-view-state';
 
@@ -150,11 +149,7 @@ const CreateProductModal = (props: { data: any }) => {
 
                       <CustomProductSections form={form} type='name' />
 
-                      <CustomProductSections
-                        //createQueryString={createQueryString}
-                        form={form}
-                        type='variant'
-                      />
+                      <CustomProductSections form={form} type='variant' />
 
                       <div className='justify-center flex w-full'>
                         <Button type='submit' className='w-32'>
